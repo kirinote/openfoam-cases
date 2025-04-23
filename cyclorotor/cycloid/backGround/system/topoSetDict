@@ -1,0 +1,116 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    { // 全領域をc0とする
+        name    c0;
+        type    cellSet;
+        action  new;
+        source  regionToCell;
+        sourceInfo
+        {
+            insidePoints ((-0.249 -0.249 0));
+        }
+    }
+    
+    { // c0を複製してc1を作成する
+        name    c1;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set c0;
+        }
+    }
+    
+    { // c0以外の領域をc1とする
+        name    c1;
+        type    cellSet;
+        action  invert;
+    }
+
+    { // c1の中にc2を作成する
+        name    c2;
+        type    cellSet;
+        action  new;
+        source  regionsToCell;
+        sourceInfo
+        { // c2領域を指定
+            insidePoints ((0 -0.065 0));
+            set c1;
+        }
+    }
+    
+    { // c1からc2を除外する
+        name    c1;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        sourceInfo
+        {
+            set c2;
+        }
+    }
+    
+    { // c1の中にc3を作成する
+        name    c3;
+        type    cellSet;
+        action  new;
+        source  regionsToCell;
+        sourceInfo
+        { // c3領域を指定
+            insidePoints ((-0.065 0 0));
+            set c1;
+        }
+    }
+    
+    { // c1からc3を除外する
+        name    c1;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        sourceInfo
+        {
+            set c3;
+        }
+    }
+    
+    { // c1の中にc4を作成
+        name    c4;
+        type    cellSet;
+        action  new;
+        source  regionsToCell;
+        sourceInfo
+        { // c4領域を指定
+            insidePoints ((0.065 0 0));
+            set c1;
+        }
+    }
+    
+    { // c1からc4を除外する
+        name    c1;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        sourceInfo
+        {
+            set c4;
+        }
+    }
+);
+
+// ************************************************************************* //
